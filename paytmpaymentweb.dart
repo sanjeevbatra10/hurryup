@@ -11,14 +11,12 @@ import 'package:mink/config/config.dart';
 import 'package:mink/models/pymtresponse.dart';
 import 'package:mink/utils/myproject_utils.dart';
 import 'dart:ui' as ui;
-import 'dart:html';
+import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'package:mink/models/session.dart';
 import 'package:mink/widgets/toast_message.dart';
 import 'package:mink/widgets/loadingwidget.dart';
-
-
 
 class PayTMPaymentWeb extends StatefulWidget {
   final Map<String, String> orderdata;
@@ -30,9 +28,11 @@ class PayTMPaymentWeb extends StatefulWidget {
 class PayTMState extends State<PayTMPaymentWeb> {
   final Map<String, String> orderdata;
   String colorscheme = "green";
-  late String myurl;
+  //late String myurl;
   String para1 = "";
   late String url;
+  late Widget _iframeWidget;
+  //Random random = new Random();  
   PayTMState({required this.orderdata});
 
   final randomnbr = new Random();
@@ -41,7 +41,7 @@ class PayTMState extends State<PayTMPaymentWeb> {
   CustSession session = ICustSession;
  String merchantid = "";
  //late HtmlElementView htmlelementview; 
- IFrameElement element = IFrameElement();
+ html.IFrameElement? element = html.IFrameElement();
 
   
   String status = "";
@@ -49,13 +49,15 @@ class PayTMState extends State<PayTMPaymentWeb> {
   @override
   void dispose() {
     super.dispose();
+    //element = null;
+    
   }
 
 Future<CustSession> getUser() async {
 
       //print("paytm payment web : ");
       SharedPreferences preferences = await SharedPreferences.getInstance();
-      merchantid = preferences.getString("merchantid")!;
+      merchantid = preferences.getString("merchantid")??"";
     // //print("pmerchantid :" + merchantid);
       var pjson = preferences.getString(merchantid);
       if (pjson != "null") {
@@ -89,57 +91,166 @@ Future<CustSession> getUser() async {
   }
 
 
-Future<bool> urlChanged(String url) async {
-        showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                          elevation: 24.0,
-                                          backgroundColor: Config.theme[colorscheme]!.listbgcolor1,
-                                          title: Text(Config.title,
-                                              style: TextStyle(
-                                                  letterSpacing: 2,
-                                                  fontFamily:
-                                                      Config.hdrfontfamily,
-                                                  fontSize:  (
-                                                      Config.size_medium),
-                                                  color: Colors.black54)),
-                                          content: Text(
-                                              "Window Changed " + url,
-                                              style: TextStyle(
-                                                  fontSize:  (
-                                                      Config.size_medium),
-                                                  color: Colors.black54)),
-                                          actions: <Widget>[
-                                            FlatButton(
-                                              color: Config.theme[colorscheme]!.iconcolor1,
-                                              child: Text(
-                                                "Yes",
-                                                style: TextStyle(
-                                                    fontSize:  
-                                                         (
-                                                            Config.size_small),
-                                                    color: Colors.black54),
-                                              ),
-                                              onPressed: () =>
-                                                 exit(0)
-                                            ),
-                                            FlatButton(
-                                              color: Config.theme[colorscheme]!.iconcolor1,
-                                              child: Text(
-                                                "No",
-                                                style: TextStyle(
-                                                    fontSize:  
-                                                         (
-                                                            Config.size_small),
-                                                    color: Colors.black54),
-                                              ),
-                                              onPressed: () {Navigator.pop(context);}
-                                            ),
-                                          ],
-                                        ));
-                                        return true;
+// Future<bool> urlChanged(String url) async {
+//         showDialog(
+//                                     context: context,
+//                                     builder: (context) => AlertDialog(
+//                                           elevation: 24.0,
+//                                           backgroundColor: Config.theme[colorscheme]!.listbgcolor1,
+//                                           title: Text(Config.title,
+//                                               style: TextStyle(
+//                                                   letterSpacing: 2,
+//                                                   fontFamily:
+//                                                       Config.hdrfontfamily,
+//                                                   fontSize:  (
+//                                                       Config.size_medium),
+//                                                   color: Colors.black54)),
+//                                           content: Text(
+//                                               "Window Changed " + url,
+//                                               style: TextStyle(
+//                                                   fontSize:  (
+//                                                       Config.size_medium),
+//                                                   color: Colors.black54)),
+//                                           actions: <Widget>[
+//                                             FlatButton(
+//                                               color: Config.theme[colorscheme]!.iconcolor1,
+//                                               child: Text(
+//                                                 "Yes",
+//                                                 style: TextStyle(
+//                                                     fontSize:  
+//                                                          (
+//                                                             Config.size_small),
+//                                                     color: Colors.black54),
+//                                               ),
+//                                               onPressed: () =>
+//                                                  exit(0)
+//                                             ),
+//                                             FlatButton(
+//                                               color: Config.theme[colorscheme]!.iconcolor1,
+//                                               child: Text(
+//                                                 "No",
+//                                                 style: TextStyle(
+//                                                     fontSize:  
+//                                                          (
+//                                                             Config.size_small),
+//                                                     color: Colors.black54),
+//                                               ),
+//                                               onPressed: () {Navigator.pop(context);}
+//                                             ),
+//                                           ],
+//                                         ));
+//                                         return true;
+//   }
+
+
+// Future<bool> showMessage(String texttoDisplay) async {
+//         showDialog(
+//                                     context: context,
+//                                     builder: (context) => AlertDialog(
+//                                           elevation: 24.0,
+//                                           backgroundColor: Config.theme[colorscheme]!.listbgcolor1,
+//                                           title: Text(Config.title ,
+//                                               style: TextStyle(
+//                                                   letterSpacing: 2,
+//                                                   fontFamily:
+//                                                       Config.hdrfontfamily,
+//                                                   fontSize:  (
+//                                                       Config.size_medium),
+//                                                   color: Colors.black54)),
+//                                           content: Text(
+//                                               texttoDisplay,
+//                                               style: TextStyle(
+//                                                   fontSize:  (
+//                                                       Config.size_medium),
+//                                                   color: Colors.black54)),
+//                                           actions: <Widget>[
+//                                             FlatButton(
+//                                               color: Config.theme[colorscheme]!.iconcolor1,
+//                                               child: Text(
+//                                                 "Yes",
+//                                                 style: TextStyle(
+//                                                     fontSize:  
+//                                                          (
+//                                                             Config.size_small),
+//                                                     color: Colors.black54),
+//                                               ),
+//                                               onPressed: () =>
+//                                                  exit(0)
+//                                             ),
+                                            
+//                                           ],
+//                                         ));
+//                                         return true;
+//   }
+
+
+  _init() {
+
+    var orderidrandom =
+    // randomnbr.nextInt(10000).toString() + orderdata['ordernumber'];
+      orderdata['ordernumber'];
+    var customerid = orderdata['customerid'];
+    var amount = orderdata['amount'];
+    var email = orderdata['email'];
+    var merchantid = orderdata['merchantid'];
+    var phonenumber = orderdata['phone'];
+    var currencysymbol = MyPrjUtil.currencySymbol(session.businesscurrency);
+    final queryParams =
+        "?order_id=$orderidrandom&customer_id=$customerid&amount=$amount&email=$email&merchantid=$merchantid&phonenumber=$phonenumber&currencysymbol=$currencysymbol";
+   url = Config.paytmApiUrl + queryParams;
+   
+   //print("paytm payment web :  build 2" + url);
+    
+   if (para1 == "callback")
+    {
+          url = "https://hurryupstores.com";
+    }
+
+
+    print("create IFRAME Element");
+
+    //int rnumber = random.nextInt(2000);
+    element = html.IFrameElement()
+      ..src = url
+      ..id = 'iFrame' 
+      ..style.border = 'none';
+      
+    //register view factory
+    // ignore: undefined_prefixed_name
+    ui.platformViewRegistry.registerViewFactory(
+      'iframeElement',
+      (int viewId) {        
+        
+        
+      //   html.window.document.addEventListener("eventname", (event) {
+      //       //MyToastMessages.popupToast("Event Received in callback: ${"received from IFRAM"}", 12, "green");
+      //       //showMessage("Display Capture from IFRAME 1");
+
+      //   });
+        
+      //   //html.window.document
+      //   html.window.onMessage.listen((element) {
+      //   //MyToastMessages.popupToast("Event Received in callback:", 12, "green");
+      //   //showMessage("Display Capture from IFRAME 2");
+      // });
+
+
+        return element!;
+      }
+    );
+
+
+  print("create IFRAME Element _iframeWidget" );
+      
+   _iframeWidget = HtmlElementView(
+      key: UniqueKey(),
+      viewType: 'iframeElement',
+      
+   );     
+  
   }
 
+  
 
 
   @override
@@ -147,59 +258,91 @@ Future<bool> urlChanged(String url) async {
     super.initState();
     //print("paytm payment web :  initState");
     
-    if (kIsWeb)
-    {
-      myurl = Uri.base.toString(); //get complete url
-      //print(myurl);
-      
-    
-      // if (para1 == "callback")
-      // {
-      //   url = "https://hurryupstores.com";
-      // }
-    }
-    //String para2 = Uri.base.queryParameters["para2"];
-    //print("paytm payment web :  initState 2");
-    
     getColorScheme();
  
-    //print("paytm payment web :  initState 2-1");
-   
+    
     getUser();    
 
-    //print("paytm payment web :  initState 3");
+    _init();
     
+    // html.window.document.getElementById('iFrame')!.parent!.addEventListener("eventname", (event) {
+    //         //MyToastMessages.popupToast("Event Received in callback: ${"received from IFRAM"}", 12, "green");
+    //         showMessage("Display Capture window document");
+
+    //     });
+
+    // html.window.document.addEventListener("eventname", (event) {
+    //         //MyToastMessages.popupToast("Event Received in callback: ${"received from IFRAM"}", 12, "green");
+    //         setState(() {
+    //           status = "html.window.document.addEventListener";
+    //         });
+    //         //showMessage("Display Capture window document");
+
+    //     });
+
+
+    // html.window.document.addEventListener("eventname", (event) {
+    //         //MyToastMessages.popupToast("Event Received in callback: ${"received from IFRAM"}", 12, "green");
+    //         //showMessage("Display Capture window document");
+    //         setState(() {
+    //           status = "html.window.document.addEventListener";
+    //         });
+    //     });
+
+    // html.window.addEventListener("eventname", (event) {
+    //         //MyToastMessages.popupToast("Event Received in callback: ${"received from IFRAM"}", 12, "green");
+    //         setState(() {
+    //           status = "html.window.addEventListener";
+    //         });
+    //         //showMessage("Display Capture from Flutter 1");
+
+    //     });
+    // html.window.onMessage.listen((event) {
+    //     var data = event.data;
+    //     showMessage(" From Outside Captured - Flutter");
+    //     setState(() {
+    //           status = "html.window.onMessage";
+    //         });
+    // });
+  
+  
+  
   }
 
-  void setupViewForWeb(String url){
-    //print("paytm payment web :  setupViewForWeb");
+
+//   void setupViewForWeb(String url){
+//     //print("paytm payment web :  setupViewForWeb");
+//     element.referrerPolicy = "unsafe-url";
+//     //register view factory
+//     // ignore: undefined_prefixed_name
+//     ui.platformViewRegistry.registerViewFactory("iframeElement", (int viewId) {
+      
     
-    //register view factory
-    // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory("abc-html", (int viewId) {
+//       //window.addEventListener();
+//       window.addEventListener( 'urlchanged', (event) {
+//         //urlChanged("URL CHanged");
+// 	    // The URL changed...
+
+//       });
+
+
+//       //window.addEventListener();
+//       window.addEventListener( 'click', (event) {
+//         //urlChanged("Clicked");
+// 	    // The URL changed...
+
+//       });
+
+//      // window.location.href =
+//       //window.cookieStore.getAll()      
+      // window.onMessage.listen((element) {
+
+  
+      //   //MyToastMessages.popupToast("messsage received", 12, "green");
+      //   MyToastMessages.popupToast("Event Received in callback: ${element.data}", 12, "green");
+
+      // });
       
-      //window.addEventListener();
-      window.addEventListener( 'urlchanged', (event) {
-        //urlChanged("URL CHanged");
-	    // The URL changed...
-
-      });
-
-
-      //window.addEventListener();
-      window.addEventListener( 'click', (event) {
-        //urlChanged("Clicked");
-	    // The URL changed...
-
-      });
-
-     // window.location.href =
-      
-      window.onMessage.listen((element) {
-        
-        //MyToastMessages.popupToast("messsage received", 12, "green");
-        MyToastMessages.popupToast("Event Received in callback: ${element.data}", 12, "green");
-        
         //  if (jsonresponse["razorpay_payment_id"] == "ERROR")
         // {
         //   responsedata = new PymtResponse(status: "Failed", respcode: "00", respmsg: "Payment Failed", txndate: "", txnid: "9999999");
@@ -231,26 +374,33 @@ Future<bool> urlChanged(String url) async {
         //   }
             
         // }
-      });
+//      });
 
-      element.requestFullscreen();
-      //element.src = "https://hurryupstores.com/paytmpay";
-      print("url in setview" + url);
-      element.src = url;
+//       element.requestFullscreen();
+//       element.
+//       //element.src = "https://hurryupstores.com/paytmpay";
+//       print("url in setview" + url);
+//       element.src = url;
+//       element.allowPaymentRequest = true;
       
-//      element.src = "abc.html";
-      ////print("element.sandbox.value");
-      ////print (element.sandbox.value); 
-      //element.src = "abc.html";
-      element.style.border = 'none';
-      return element;
-    });
-    // Add wait before opening the payment page
-  }
+      
+// //      element.src = "abc.html";
+//       ////print("element.sandbox.value");
+//       ////print (element.sandbox.value); 
+//       //element.src = "abc.html";
+//       element.style.border = 'none';
+//       return element;
+//     });
+//     // Add wait before opening the payment page
+//   }
 
+  
+
+  
   Future<bool> _onBackPressed() {
 
-   Navigator.pop(context, responsedata == null ? PymtResponse(status: "Failed", respcode: "00", respmsg: "Payment Failed", txndate: "", txnid: "9999999"): responsedata );
+   //html.window.document.
+   Navigator.pop(context, responsedata == null ? PymtResponse(status: "Failed", respcode: "00", respmsg: "Payment Failed", txndate: "", txnid: "9999999", invoicenbr: '999999999'): responsedata );
    return Future.value(true);
 
   }
@@ -261,39 +411,16 @@ Future<bool> urlChanged(String url) async {
     //MyPrjUtil.initScreenUtil(context);
     //print("paytm payment web :  build");
     
-    var orderidrandom =
-        // randomnbr.nextInt(10000).toString() + orderdata['ordernumber'];
-         orderdata['ordernumber'];
-    var customerid = orderdata['customerid'];
-    var amount = orderdata['amount'];
-    var email = orderdata['email'];
-    var merchantid = orderdata['merchantid'];
-    var phonenumber = orderdata['phone'];
 
-    final queryParams =
-        "?order_id=$orderidrandom&customer_id=$customerid&amount=$amount&email=$email&merchantid=$merchantid&phonenumber=$phonenumber";
-   url = Config.paytmApiUrl + queryParams;
-   
-   //print("paytm payment web :  build 2" + url);
-    
-   if (para1 == "callback")
-      {
-        url = "https://hurryupstores.com";
-    }
-   
-   if (kIsWeb)
-    {  
-      print(url);
-      setupViewForWeb(url); 
       
       //setupViewForWeb("https://hurryupstores.com/");
-    }
+   // }
 
 // for clear text erro add android:usesCleartextTraffic="true" in C:\srcode\fluttersamples\paytmtesting\android\app\src\main\AndroidManifest.xml
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Config.theme[colorscheme]!.hdrbgcolor1,
-          title: Text(Config.title),
+          title: Text(Config.title + "" + status),
           leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 iconSize:  (Config.size_large),
@@ -301,52 +428,7 @@ Future<bool> urlChanged(String url) async {
                   _onBackPressed();
                 },
         )),
-        body: kIsWeb && paymentstatus == "In progress" ? SizedBox( height: 500, width: 500, child: HtmlElementView(key: UniqueKey(), viewType: 'abc-html')) : (Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                  session.shopimage != '' ? CircleAvatar(
-                    backgroundColor: Config.theme[colorscheme]!.hdrbgcolor1,
-                    radius: 80,
-                    backgroundImage: NetworkImage('${Config.WEBAPP_HOST_PROFILE}/${session.merchantid}/${session.shopimage}'),
-                    ): CircleAvatar(
-                    backgroundColor: Config.theme[colorscheme]!.hdrbgcolor1,
-                    radius: 80,
-                    child: Image.asset('assets/images/' + Config.logo_white),                    
-                  ),
-                Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                        ),
-                Text(
-                  paymentstatus, //Config.title,
-                  style: TextStyle(
-                      color: Colors.black87,
-                      //fontWeight: FontWeight.bold,
-                      fontFamily: Config.hdrfontfamily,
-                      fontSize:  (Config.size_medium)),
-                ),
-                Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                ),
-                paymentstatus == "In progress" ? 
-                CustomLoading(option: "Circle")
-                :
-                ElevatedButton(onPressed: _onBackPressed, 
-                style: ElevatedButton.styleFrom(
-                primary:  Config.theme[colorscheme]!.hdrbgcolor1,
-                ),
-                child: Text(
-                  "Go Back To Order Summary", //Config.title,
-                  style: TextStyle(
-                      color: Config.theme[colorscheme]!.txtcolor1,
-                      //background: Config.theme[colorscheme]!.hdrbgcolor1,
-                      //backgroundColor: Config.theme[colorscheme]!.hdrbgcolor1,
-                      //fontWeight: FontWeight.bold,
-                      fontFamily: Config.hdrfontfamily,
-                      fontSize:  (Config.size_medium)),
-                ),)
-
-              ]))),
-      );
+        body: _iframeWidget,
+        );
   }
 }
